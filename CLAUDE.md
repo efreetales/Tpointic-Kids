@@ -329,6 +329,16 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
   - **Bola** do cantinho: de 44 para 72 px. As contas da trajetória usam metade do tamanho.
   - **Bolhas de sabão**: de 34–62 para 56–96 px.
 
+- 2026-10-06: **publicado no GitHub**: https://github.com/efreetales/Tpointic-Kids (branch `main`).
+  - O `.gitignore` deixa de fora:
+    - a chave (`chave_elevenlabs.dat`), `erros.txt` e outros arquivos de trabalho;
+    - os backups (`versoes_antigas/`, `audios_antigos/`, `tentativas_vozes/`);
+    - os modelos 3D;
+    - os vídeos que o jogo não usa e as imagens antigas da Cacá 3D.
+  - O envio teve cerca de 21 MB.
+  - Para publicar mudanças: `git add -A`, `git commit` e `git push`.
+  - **Vercel:** a conexão MCP não tem permissão para criar projeto (erro 403). O Tales precisa importar o repositório em vercel.com/new (time "efreetales-1183's projects", preset "Other", sem build). Depois disso, cada `git push` publica sozinho.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).
