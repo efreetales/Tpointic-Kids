@@ -355,6 +355,17 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
     - No fim da canção de ninar (`snoreAll`), cada bicho ronca em loop no seu tom (`SFX_RATE`), volume 0,16. A animação `--snore` acompanha um ronco (2,38 s ÷ tom).
     - O som some sozinho em 2,5 s depois de 15 s (`roncoSome`). O `wakeAll` também para tudo.
 
+- 2026-10-06: **vídeo de divulgação** (LinkedIn e portfólio): `video_divulgacao/bicharada_cantante_divulgacao.mp4`, 1080×1350 (4:5), 30 fps, cerca de 57 s, 13 MB.
+  - `grava.mjs`, com Node 24, controla um Chrome sem janela pelo protocolo de depuração (porta 9333, perfil próprio, `--force-device-scale-factor=2`):
+    - joga sozinho, com legendas e cartazes injetados na página e marcas de cena;
+    - grava os quadros (screencast);
+    - anota cada áudio tocado: arquivo, hora, tom, volume e fim.
+    - Durante a gravação esconde o rodapé e a barra de músicas e, no cantinho, a banda.
+  - `monta_video.py` remonta o vídeo contínuo e o som com os mp3 reais (os tons sintetizados ficam de fora) e corta 15 trechos (`CORTES`).
+  - Para refazer: servidor em :8000, depois `node grava.mjs` (cerca de 3,5 min) e `python monta_video.py`.
+- 2026-10-06: **telas baixas no cantinho**: o balão flutua no topo (`position:absolute`) e o palco reserva espaço para ele. Com altura de até 760 px, a bandeja fica compacta.
+- 2026-10-06: **noite na floresta**: `night-sky` vai só até 0,78 de opacidade, para a floresta continuar aparecendo.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).

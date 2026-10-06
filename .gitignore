@@ -18,3 +18,15 @@ videos/tema.mp4
 videos/vitoria.mp4
 __pycache__/
 *.tmp
+
+# Textos de divulgação (não fazem parte do jogo)
+divulgacao_*.txt
+
+# Vídeo de divulgação: só os scripts vão para o repositório (quadros, gravação e vídeo ficam no computador)
+video_divulgacao/frames/
+video_divulgacao/perfil_chrome/
+video_divulgacao/*.mp4
+video_divulgacao/*.wav
+video_divulgacao/*.jpg
+video_divulgacao/*.json
+video_divulgacao/lista.txt
