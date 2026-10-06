@@ -1,0 +1,36 @@
+{
+  "modelo": "eleven_v4",
+  "personagens": {
+    "caca": {
+      "stability": 0.3,
+      "similarity_boost": 0.5,
+      "style": 1.0,
+      "speed": 0.9
+    },
+    "zeca": {
+      "stability": 0.9,
+      "similarity_boost": 0.8,
+      "style": 0.0,
+      "speed": 0.85
+    },
+    "nina": {
+      "stability": 0.6,
+      "similarity_boost": 0.8,
+      "style": 0.25,
+      "speed": 0.85
+    },
+    "tuca": {
+      "stability": 1.0,
+      "similarity_boost": 0.8,
+      "style": 0.1,
+      "speed": 0.85
+    }
+  },
+  "textos": {
+    "apresenta_caca": "Oie! Eu sou a Cacá. A capivara!",
+    "oba_caca": "Eba! Conseguimos!!",
+    "r1_conta1_caca": "Uma",
+    "r5_erro_caca": "Quase! Essa não é um caju. Procura o caju!",
+    "apresenta_zeca": "E aí! Eu sou o Zeca."
+  }
+}

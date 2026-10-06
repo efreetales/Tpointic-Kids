@@ -1,0 +1,20 @@
+# Chave do ElevenLabs (criptografada pelo Windows, mas nunca vai para a internet)
+chave_elevenlabs.dat
+erros.txt
+refazer.txt
+vozes_usadas.txt
+
+# Backups, testes e arquivos grandes que o jogo não usa
+versoes_antigas/
+audios_antigos/
+tentativas_vozes/
+modelos/
+modelos_3d/
+comparar_palmas/bruto_*.mp3
+imagens/caca_*.webp
+videos/clipe_cancao_da_bicharada.mp4
+videos/clipe_tema.mp4
+videos/tema.mp4
+videos/vitoria.mp4
+__pycache__/
+*.tmp

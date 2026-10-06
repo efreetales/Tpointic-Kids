@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparar vozes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@600;800&display=swap">
+<style>
+  :root{--ceu:#E3F4F8;--papel:#fff;--tinta:#24323F;--suave:#5E6B76;--linha:#D5E3E8;--coral:#F2785C;--sol:#FFD25A}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ceu);color:var(--tinta);font:600 15px/1.45 Nunito,system-ui,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+  h1{font:800 26px/1.1 "Baloo 2",sans-serif;margin:0 0 6px}
+  .dica{color:var(--suave);margin:0 0 18px}
+  .bicho{background:var(--papel);border:2px solid var(--linha);border-radius:16px;padding:14px 16px;margin-bottom:14px}
+  .bicho h2{font:800 20px "Baloo 2",sans-serif;margin:0 0 8px}
+  .fala{border-top:1px dashed var(--linha);padding-top:10px;margin-top:10px}
+  .fala:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .texto{font-weight:800;margin-bottom:6px}
+  .versoes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  @media (max-width:720px){.versoes{grid-template-columns:1fr}}
+  .versao{border:2px solid var(--linha);border-radius:12px;padding:8px 10px;cursor:pointer}
+  .versao.escolhida{border-color:var(--coral);background:#FFF3EF}
+  .versao b{display:block;font-size:13px}
+  .versao small{color:var(--suave);font-size:12px}
+  audio{width:100%;height:36px;margin-top:4px}
+  #resumo{position:sticky;bottom:0;background:var(--sol);border:2px solid var(--tinta);border-radius:14px;padding:10px 14px;margin-top:16px;font-weight:800}
+</style>
+<div class="wrap">
+  <h1>Comparar entonação das vozes</h1>
+  <p class="dica">Ouça as três versões de cada fala e toque na que preferir. <b>Atual</b> é a voz que está no jogo hoje
+    (Multilingual v2). <b>v3</b> e <b>v4</b> são modelos novos do ElevenLabs, com marcações de emoção. No fim, me diga o resumo.</p>
+  <div id="lista">Carregando…</div>
+  <div id="resumo">Escolha uma versão em cada fala.</div>
+</div>
+<script>
+const NOMES = { caca: "Cacá", zeca: "Zeca", nina: "Nina", tuca: "Tuca" };
+const ROTULO = { atual: "Atual (Multilingual v2)", eleven_v3: "Eleven v3", eleven_v4: "Eleven v4" };
+const escolha = {};
+fetch("amostras.json?" + Date.now()).then(r => r.json()).then(amostras => {
+  const porBicho = {};
+  amostras.forEach(a => (porBicho[a.quem] ||= []).push(a));
+  document.getElementById("lista").innerHTML = Object.entries(porBicho).map(([quem, falas]) => `
+    <section class="bicho"><h2>${NOMES[quem]}</h2>
+      ${falas.map(f => {
+        const versoes = [{ modelo: "atual", arquivo: f.atual }].concat(f.versoes.map(v => ({ modelo: v.modelo, arquivo: v.arquivo, ouvido: v.ouvido })));
+        return `<div class="fala"><div class="texto">“${f.texto}”</div><div class="versoes">
+          ${versoes.map(v => `<div class="versao" data-fala="${f.fala}" data-modelo="${v.modelo}">
+            <b>${ROTULO[v.modelo]}</b>${v.ouvido ? `<small>transcrição: ${v.ouvido}</small>` : `<small>&nbsp;</small>`}
+            <audio controls preload="none" src="${v.arquivo}"></audio></div>`).join("")}
+        </div></div>`; }).join("")}
+    </section>`).join("");
+  document.querySelectorAll(".versao").forEach(el => el.addEventListener("click", e => {
+    if (e.target.tagName === "AUDIO") return;
+    document.querySelectorAll(`.versao[data-fala="${el.dataset.fala}"]`).forEach(x => x.classList.remove("escolhida"));
+    el.classList.add("escolhida"); escolha[el.dataset.fala] = el.dataset.modelo; resumo(amostras.length);
+  }));
+});
+function resumo(total){
+  const cont = {}; Object.values(escolha).forEach(m => cont[m] = (cont[m] || 0) + 1);
+  document.getElementById("resumo").textContent = `Escolhidas ${Object.keys(escolha).length} de ${total}: ` +
+    Object.entries(cont).map(([m, n]) => `${ROTULO[m]} ${n}x`).join(" · ");
+}
+</script>
+</html>

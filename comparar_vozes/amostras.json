@@ -1,0 +1,146 @@
+[
+    {
+        "quem":  "caca",
+        "fala":  "r1_pergunta_caca",
+        "texto":  "Que fruta é essa? Fala pra mim!",
+        "atual":  "../audios/r1_pergunta_caca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "r1_pergunta_caca__eleven_v3.mp3",
+                            "ouvido":  "Que fruta é essa? Fala pra mim"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "r1_pergunta_caca__eleven_v4.mp3",
+                            "ouvido":  "Que fruta é essa? Fala pra mim"
+                        }
+                    ]
+    },
+    {
+        "quem":  "caca",
+        "fala":  "oba_caca",
+        "texto":  "Eba! Conseguimos!!",
+        "atual":  "../audios/oba_caca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "oba_caca__eleven_v3.mp3",
+                            "ouvido":  "Ebaaa! Conseguimos"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "oba_caca__eleven_v4.mp3",
+                            "ouvido":  "Eba! [riso] Conseguimos"
+                        }
+                    ]
+    },
+    {
+        "quem":  "zeca",
+        "fala":  "r2_pedido_zeca",
+        "texto":  "Me ajuda a pegar três bananas?",
+        "atual":  "../audios/r2_pedido_zeca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "r2_pedido_zeca__eleven_v3.mp3",
+                            "ouvido":  "Me ajuda a pegar três bananas?"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "r2_pedido_zeca__eleven_v4.mp3",
+                            "ouvido":  "Me ajuda a pegar três bananas?"
+                        }
+                    ]
+    },
+    {
+        "quem":  "zeca",
+        "fala":  "r2_erro_zeca",
+        "texto":  "Opa! Essa não é banana. Procura a banana amarelinha!",
+        "atual":  "../audios/r2_erro_zeca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "r2_erro_zeca__eleven_v3.mp3",
+                            "ouvido":  "Opa, essa não é banana. Procura a banana amarelinha"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "r2_erro_zeca__eleven_v4.mp3",
+                            "ouvido":  "Opa, essa não é banana. Procura a banana amarelinha"
+                        }
+                    ]
+    },
+    {
+        "quem":  "nina",
+        "fala":  "abertura_nina",
+        "texto":  "Oi! Vamos contar e cantar com a Bicharada?",
+        "atual":  "../audios/abertura_nina.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "abertura_nina__eleven_v3.mp3",
+                            "ouvido":  "Oi, vamos contar e cantar com a bicharada?"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "abertura_nina__eleven_v4.mp3",
+                            "ouvido":  "Oi, vamos contar e cantar com a bicharada?"
+                        }
+                    ]
+    },
+    {
+        "quem":  "nina",
+        "fala":  "oba_nina",
+        "texto":  "Isso aí! Você é demais!",
+        "atual":  "../audios/oba_nina.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "oba_nina__eleven_v3.mp3",
+                            "ouvido":  "Isso aí, você é demais!"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "oba_nina__eleven_v4.mp3",
+                            "ouvido":  "Isso aí, você é demais!"
+                        }
+                    ]
+    },
+    {
+        "quem":  "tuca",
+        "fala":  "apresenta_tuca",
+        "texto":  "Eu sou o Tuca, o tucano cantor!",
+        "atual":  "../audios/apresenta_tuca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "apresenta_tuca__eleven_v3.mp3",
+                            "ouvido":  "Eu sou o Tuca, o tucano cantor"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "apresenta_tuca__eleven_v4.mp3",
+                            "ouvido":  "Eu sou o Tuca, o tucano cantor"
+                        }
+                    ]
+    },
+    {
+        "quem":  "tuca",
+        "fala":  "oba_tuca",
+        "texto":  "Que lindo! Bravo, bravo!",
+        "atual":  "../audios/oba_tuca.mp3",
+        "versoes":  [
+                        {
+                            "modelo":  "eleven_v3",
+                            "arquivo":  "oba_tuca__eleven_v3.mp3",
+                            "ouvido":  "Que lindo! Bravo, bravo"
+                        },
+                        {
+                            "modelo":  "eleven_v4",
+                            "arquivo":  "oba_tuca__eleven_v4.mp3",
+                            "ouvido":  "Que lindo! Bravo, bravo"
+                        }
+                    ]
+    }
+]

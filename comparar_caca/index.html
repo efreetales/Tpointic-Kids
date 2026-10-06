@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escolher a Cacá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@600;800&display=swap">
+<style>
+  :root{--ceu:#E3F4F8;--papel:#fff;--tinta:#24323F;--suave:#5E6B76;--linha:#D5E3E8;--coral:#F2785C;--sol:#FFD25A}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ceu);color:var(--tinta);font:600 15px/1.45 Nunito,system-ui,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+  h1{font:800 26px/1.1 "Baloo 2",sans-serif;margin:0 0 6px}
+  .dica{color:var(--suave);margin:0 0 16px}
+  .grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .opcao{background:var(--papel);border:2px solid var(--linha);border-radius:18px;padding:12px;cursor:pointer;text-align:center}
+  .opcao.escolhida{border-color:var(--coral);background:#FFF3EF}
+  .opcao h2{font:800 20px "Baloo 2",sans-serif;margin:4px 0 0}
+  .opcao p{margin:2px 0 6px;color:var(--suave);font-size:13px}
+  .palco{background:#7CC56B url("../imagens/cenario_floresta.webp") center 72%/cover;border-radius:12px;padding:10px}
+  .palco svg{width:100%;max-width:240px;aspect-ratio:1;display:block;margin:0 auto;overflow:visible}
+  .opcao:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+  #resumo{position:sticky;bottom:0;background:var(--sol);border:2px solid var(--tinta);border-radius:14px;padding:10px 14px;margin-top:16px;font-weight:800}
+</style>
+<div class="wrap">
+  <h1>Qual Cacá você prefere?</h1>
+  <p class="dica">Toque na versão que mais lembra a capivara do videoclipe. Se nenhuma estiver boa, me diga o que mais se aproxima e o que mudar.</p>
+  <div class="grade" id="grade"></div>
+  <div id="resumo">Escolha uma versão.</div>
+</div>
+<script>
+const INK = "#24323F", PAPER = "#FFFDF6";
+const sh = (tag, a, fill, w=3) =>
+  `<${tag} ${a} fill="${PAPER}"/><${tag} ${a} fill="${fill}" transform="translate(-2 2)"/>` +
+  `<${tag} ${a} fill="none" stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
+const line = (d, w=3, color=INK) => `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const eye = (x,y,r=6.5) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}"/><circle cx="${x+r*0.32}" cy="${y-r*0.34}" r="${r*0.38}" fill="#fff"/><circle cx="${x-r*0.3}" cy="${y+r*0.36}" r="${r*0.15}" fill="#fff"/>`;
+const blush = (x,y,rx=6.5) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx*0.62}" fill="#F2785C" opacity=".5"/>`;
+const flor = (x,y) => `<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a => `<circle cx="0" cy="-5" r="4.3" transform="rotate(${a})" fill="#F27BAA" stroke="${INK}" stroke-width="1.8"/>`).join("")}<circle r="3" fill="#FFD25A" stroke="${INK}" stroke-width="1.5"/></g>`;
+const braco = (ox, oy, comp, larg, cor, ang) => `<g transform="rotate(${ang} ${ox} ${oy})">${sh("ellipse", `cx="${ox}" cy="${oy + comp / 2}" rx="${larg}" ry="${comp / 2}"`, cor, 2.6)}</g>`;
+const PELO = "#C8915F", ESCURO = "#8D5F43", FOCINHO = "#A06F4F", BARRIGA = "#F3CDA6", BRACO = "#BB8452";
+const NARIZ = "#3A2418";
+
+const OPCOES = [
+  { id:"atual", nome:"Atual", desc:"Cabeça e corpo numa peça só (a que você achou parecida com urso).", art: () => {
+    const CF = "M60 15 C79 15 92 26 94 44 C96 58 100 71 100 84 C100 88 88 89 60 89 C32 89 20 88 20 84 C20 71 24 58 26 44 C28 26 41 15 60 15 Z";
+    const CORPO = "M20 80 C15 94 14 106 17 114 L103 114 C106 106 105 94 100 80 Z";
+    return `<path d="${CORPO}" fill="${PAPER}"/><path d="${CORPO}" fill="${PELO}" transform="translate(-2 2)"/>${line("M20 80 C15 94 14 106 17 114 L103 114 C106 106 105 94 100 80")}
+      <ellipse cx="60" cy="100" rx="21" ry="13" fill="${BARRIGA}"/>
+      ${sh("ellipse", `cx="42" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}${sh("ellipse", `cx="78" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}
+      ${sh("circle", `cx="34" cy="21" r="5.6"`, PELO, 2.4)}${sh("circle", `cx="86" cy="21" r="5.6"`, PELO, 2.4)}
+      <path d="${CF}" fill="${PAPER}"/><path d="${CF}" fill="${PELO}" transform="translate(-2 2)"/>${line("M20 86 C20 71 24 58 26 44 C28 26 41 15 60 15 C79 15 92 26 94 44 C96 58 100 71 100 86")}
+      <ellipse cx="60" cy="63" rx="13.5" ry="19.5" fill="${FOCINHO}"/>
+      <ellipse cx="54.5" cy="52" rx="3.3" ry="1.9" transform="rotate(28 54.5 52)" fill="${NARIZ}"/><ellipse cx="65.5" cy="52" rx="3.3" ry="1.9" transform="rotate(-28 65.5 52)" fill="${NARIZ}"/>
+      ${line("M60 55 L60 63.5 M51.5 64.5 Q56 69.5 60 63.5 Q64 69.5 68.5 64.5", 2.4)}
+      ${eye(38,41,4.8)}${eye(82,41,4.8)}${blush(30,58,4.5)}${blush(90,58,4.5)}${flor(86,25)}
+      ${braco(24, 88, 24, 6, BRACO, 26)}${braco(96, 88, 24, 6, BRACO, -26)}`; } },
+
+  { id:"separada", nome:"Cabeça separada", desc:"Cabeça de caixinha arredondada em cima do corpo, com ombros. Orelhas bem pequenas, para trás.", art: () => `
+      ${sh("path", `d="M15 114 C11 92 24 76 60 76 C96 76 109 92 105 114 Z"`, PELO)}
+      <ellipse cx="60" cy="101" rx="22" ry="12" fill="${BARRIGA}"/>
+      ${sh("ellipse", `cx="42" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}${sh("ellipse", `cx="78" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}
+      ${sh("ellipse", `cx="35" cy="21" rx="4.6" ry="4"`, PELO, 2.2)}${sh("ellipse", `cx="85" cy="21" rx="4.6" ry="4"`, PELO, 2.2)}
+      ${sh("rect", `x="25" y="17" width="70" height="66" rx="25"`, PELO)}
+      <ellipse cx="60" cy="59" rx="14" ry="18" fill="${FOCINHO}"/>
+      <ellipse cx="54.5" cy="48" rx="3.2" ry="1.9" transform="rotate(28 54.5 48)" fill="${NARIZ}"/><ellipse cx="65.5" cy="48" rx="3.2" ry="1.9" transform="rotate(-28 65.5 48)" fill="${NARIZ}"/>
+      ${line("M60 51 L60 59.5 M51.5 60.5 Q56 65.5 60 59.5 Q64 65.5 68.5 60.5", 2.4)}
+      ${eye(38,39,4.6)}${eye(82,39,4.6)}${blush(32,56,4.5)}${blush(88,56,4.5)}${flor(85,24)}
+      ${braco(22, 86, 24, 6, BRACO, 22)}${braco(98, 86, 24, 6, BRACO, -22)}` },
+
+  { id:"tresquartos", nome:"De três-quartos", desc:"Corpo meio de lado e cabeça comprida, com o focinhão virado para a direita (como o Frame 3).", art: () => `
+      ${sh("path", `d="M13 114 C8 88 22 70 52 70 C82 70 101 86 99 114 Z"`, PELO)}
+      <ellipse cx="66" cy="100" rx="20" ry="12" fill="${BARRIGA}"/>
+      ${sh("ellipse", `cx="38" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}${sh("ellipse", `cx="74" cy="112" rx="9" ry="5"`, ESCURO, 2.4)}
+      ${sh("ellipse", `cx="36" cy="22" rx="4.6" ry="4.2"`, PELO, 2.2)}${sh("ellipse", `cx="52" cy="17" rx="5" ry="4.4"`, PELO, 2.2)}
+      ${sh("path", `d="M22 48 C21 28 36 17 56 17 C74 17 90 23 99 36 C106 46 106 61 99 70 C92 78 78 80 62 78 C40 76 23 68 22 48 Z"`, PELO)}
+      <path d="M80 33 C93 33 104 42 104 55 C104 68 95 77 82 77 C74 77 69 68 69 55 C69 42 72 33 80 33 Z" fill="${FOCINHO}"/>
+      <ellipse cx="97" cy="46" rx="3" ry="1.8" transform="rotate(-25 97 46)" fill="${NARIZ}"/><ellipse cx="88" cy="45" rx="2.4" ry="1.5" transform="rotate(20 88 45)" fill="${NARIZ}"/>
+      ${line("M93 49 L92 58 M84 59 Q88 63.5 92 58 Q96 62.5 100 58", 2.4)}
+      ${eye(59,38,5)}${eye(36,38,3.8)}${blush(68,57,4.5)}${flor(46,22)}
+      ${braco(30, 86, 24, 6, BRACO, 20)}${braco(86, 84, 24, 6, BRACO, -26)}` },
+];
+
+const grade = document.getElementById("grade");
+grade.innerHTML = OPCOES.map(o => `<div class="opcao" tabindex="0" role="button" data-id="${o.id}">
+  <div class="palco"><svg viewBox="0 0 120 120" aria-hidden="true">${o.art()}</svg></div>
+  <h2>${o.nome}</h2><p>${o.desc}</p></div>`).join("");
+grade.querySelectorAll(".opcao").forEach(el => {
+  const escolhe = () => { grade.querySelectorAll(".opcao").forEach(x => x.classList.toggle("escolhida", x === el));
+    document.getElementById("resumo").textContent = `Escolhida: ${OPCOES.find(o => o.id === el.dataset.id).nome}. Me diga isso no chat (e o que mudar, se quiser).`; };
+  el.addEventListener("click", escolhe); el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); escolhe(); } });
+});
+</script>
+</html>

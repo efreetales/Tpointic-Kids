@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escolher palmas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@600;800&display=swap">
+<style>
+  :root{--ceu:#E3F4F8;--papel:#fff;--tinta:#24323F;--suave:#5E6B76;--linha:#D5E3E8;--coral:#F2785C;--sol:#FFD25A}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ceu);color:var(--tinta);font:600 15px/1.45 Nunito,system-ui,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+  h1{font:800 26px/1.1 "Baloo 2",sans-serif;margin:0 0 6px}
+  .dica{color:var(--suave);margin:0 0 16px}
+  .ajustes{background:var(--papel);border:2px solid var(--linha);border-radius:16px;padding:12px 16px;margin-bottom:14px;display:grid;gap:10px}
+  .ajustes label{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  input[type=range]{flex:1;min-width:160px}
+  .opcao{background:var(--papel);border:2px solid var(--linha);border-radius:16px;padding:12px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .opcao.escolhida{border-color:var(--coral);background:#FFF3EF}
+  .opcao h2{font:800 19px "Baloo 2",sans-serif;margin:0;flex:1 1 180px}
+  .opcao small{display:block;font:600 13px Nunito,sans-serif;color:var(--suave)}
+  button{font:800 15px Nunito,sans-serif;color:var(--tinta);background:#fff;border:2px solid var(--tinta);border-radius:999px;padding:6px 14px;cursor:pointer}
+  button.tocar{background:var(--sol)}
+  button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+  #resumo{position:sticky;bottom:0;background:var(--sol);border:2px solid var(--tinta);border-radius:14px;padding:10px 14px;margin-top:16px;font-weight:800}
+</style>
+<div class="wrap">
+  <h1>Escolher o som das palmas</h1>
+  <p class="dica">Toque <b>Ouvir na música</b> para escutar a música da vitória com as palmas no "Bata palmas", do jeito que vai ficar no jogo.
+    Depois toque em <b>Escolher</b> na que preferir e ajuste o volume e o ritmo.</p>
+  <div class="ajustes">
+    <label>Volume das palmas <input type="range" id="vol" min="0.1" max="1" step="0.05" value="0.55"> <span id="volTxt"></span></label>
+    <label><input type="checkbox" id="metade"> Palma só a cada dois tempos (menos palmas)</label>
+  </div>
+  <div id="lista"></div>
+  <div id="resumo">Escolha uma opção.</div>
+</div>
+<script>
+const OPCOES = [
+  { id:"atual",   nome:"Atual",            desc:"A que está no jogo agora (uma palma seca)." },
+  { id:"turma",   nome:"Turma de crianças", desc:"Várias crianças batendo palma juntas." },
+  { id:"macia",   nome:"Palma macia",       desc:"Uma palma mais redonda e suave." },
+  { id:"desenho", nome:"Palma de desenho",  desc:"Som de palma de desenho animado." },
+  { id:"crianca", nome:"Palminha de criança", desc:"Mãozinhas pequenas, leve." },
+  { id:"nenhuma", nome:"Sem som de palma",  desc:"Os bichos batem palma só na imagem." },
+];
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const buf = {}, carregar = async (n, url) => buf[n] = await ctx.decodeAudioData(await (await fetch(url)).arrayBuffer());
+let tempos = null, tocando = [], escolha = null;
+const vol = document.getElementById("vol"), metade = document.getElementById("metade");
+const mostraVol = () => document.getElementById("volTxt").textContent = Math.round(vol.value * 100) + "%";
+vol.oninput = () => { mostraVol(); resumo(); }; metade.onchange = resumo; mostraVol();
+
+document.getElementById("lista").innerHTML = OPCOES.map(o => `
+  <div class="opcao" data-id="${o.id}"><h2>${o.nome}<small>${o.desc}</small></h2>
+    ${o.id !== "nenhuma" ? `<button data-uma>Ouvir uma palma</button>` : ""}
+    <button class="tocar" data-musica>Ouvir na música</button>
+    <button data-escolher>Escolher</button></div>`).join("");
+
+function para(){ tocando.forEach(s => { try { s.stop(); } catch(e) {} }); tocando = []; }
+function toca(b, quando = 0, ganho = 1){
+  const s = ctx.createBufferSource(); s.buffer = b; const g = ctx.createGain(); g.gain.value = ganho;
+  s.connect(g); g.connect(ctx.destination); s.start(quando); tocando.push(s);
+}
+// trechos "Bata palmas ..." da letra (igual ao jogo): do "Bata" até 2 palavras depois de "palmas"
+function trechos(tw){
+  const limpa = t => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
+  const segs = [];
+  tw.forEach((w, i) => {
+    if (limpa(w.p) !== "bata") return;
+    const k = tw.findIndex((x, j) => j > i && j <= i + 2 && limpa(x.p) === "palmas"); if (k < 0) return;
+    const fim = tw[Math.min(k + 2, tw.length - 1)].f, ult = segs[segs.length - 1];
+    if (ult && w.i - ult[1] < 1.2) ult[1] = fim; else segs.push([w.i, fim]);
+  });
+  return segs;
+}
+async function ouvirNaMusica(id){
+  await ctx.resume(); para();
+  if (!buf.musica) await carregar("musica", "../audios/m2_comemora.mp3");
+  if (!tempos) tempos = await (await fetch("../audios/m2_comemora.tempos.json")).json();
+  if (id !== "nenhuma" && !buf[id]) await carregar(id, `opcao_${id}.mp3`);
+  const t0 = ctx.currentTime + 0.1;
+  toca(buf.musica, t0);
+  if (id === "nenhuma") return;
+  const passo = metade.checked ? 1.0 : 0.5;
+  trechos(tempos).forEach(([a, b]) => { for (let t = a; t < b - 0.2; t += passo) toca(buf[id], t0 + t, +vol.value); });
+}
+async function ouvirUma(id){
+  await ctx.resume(); para();
+  if (!buf[id]) await carregar(id, `opcao_${id}.mp3`);
+  toca(buf[id], 0, +vol.value);
+}
+document.querySelectorAll(".opcao").forEach(el => {
+  const id = el.dataset.id;
+  el.querySelector("[data-musica]").onclick = () => ouvirNaMusica(id);
+  el.querySelector("[data-uma]")?.addEventListener("click", () => ouvirUma(id));
+  el.querySelector("[data-escolher]").onclick = () => {
+    escolha = id; document.querySelectorAll(".opcao").forEach(x => x.classList.toggle("escolhida", x === el)); resumo();
+  };
+});
+function resumo(){
+  if (!escolha) return;
+  const o = OPCOES.find(x => x.id === escolha);
+  document.getElementById("resumo").textContent = escolha === "nenhuma" ? "Escolhida: sem som de palma."
+    : `Escolhida: ${o.nome} · volume ${Math.round(vol.value * 100)}% · ${metade.checked ? "a cada dois tempos" : "em todo tempo"}. Me diga isso no chat.`;
+}
+</script>
+</html>
