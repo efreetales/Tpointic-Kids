@@ -337,7 +337,10 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
     - os vídeos que o jogo não usa e as imagens antigas da Cacá 3D.
   - O envio teve cerca de 21 MB.
   - Para publicar mudanças: `git add -A`, `git commit` e `git push`.
-  - **Vercel:** a conexão MCP não tem permissão para criar projeto (erro 403). O Tales precisa importar o repositório em vercel.com/new (time "efreetales-1183's projects", preset "Other", sem build). Depois disso, cada `git push` publica sozinho.
+  - **Vercel:** o Tales criou o projeto `tpointic-kids` (`prj_9skdQCaZawmNxNQRjJO6B9yEwcps`, time `team_jVeLX8H1FBzzBClzvVNwEtAG`), ligado ao repositório. A conexão MCP só lê; não cria projeto (erro 403).
+    - **Site: https://tpointic-kids.vercel.app**
+    - Cada `git push` na `main` publica sozinho.
+    - Conferido no site: todos os áudios, tempos, vídeo e cenário respondem 200, a chave dá 404 e a primeira rodada começa normalmente.
 
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
