@@ -342,6 +342,19 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
     - Cada `git push` na `main` publica sozinho.
     - Conferido no site: todos os áudios, tempos, vídeo e cenário respondem 200, a chave dá 404 e a primeira rodada começa normalmente.
 
+- 2026-10-06: **segunda música de vitória e ronco**. Versão anterior: `versoes_antigas/index_antes_brilha_ronco.html`.
+  - **`m4_brilha`**: "Brilha e Palmas", de `D:\downloads\Brilha E Palmas.wav`, convertida para mp3, 10 s.
+    - Letra: "Muito bem, você conseguiu! Eba! / Bate palmas que foi genial! / Clap, clap, clap!".
+    - Tempos das palavras pela transcrição do ElevenLabs (13 palavras, batendo com a letra).
+  - As vitórias **se revezam** (`VITORIAS`, `vitoriaVez`): rodadas 1, 3 e 5 usam `m2_comemora`; rodadas 2 e 4 usam `m4_brilha`. A dança do cantinho continua com a `m2`.
+  - **Palmas:**
+    - `trechosPalmas` aceita "bata" ou "bate palmas" e vai até 3 palavras depois.
+    - Cada palavra "clap" ganha uma palma no instante dela, com a turma batendo palmas.
+    - Conferido no navegador na `m4`: palmas de 4,1 a 5,7 s e de 6,4 a 7,7 s, depois `vibra`. Com o ajuste final, a primeira parte vai até o "genial".
+  - **Ronco**: `sfx_ronco`, de `D:\downloads\dog_snore.mp3`, com dois roncos em 4,76 s.
+    - No fim da canção de ninar (`snoreAll`), cada bicho ronca em loop no seu tom (`SFX_RATE`), volume 0,16. A animação `--snore` acompanha um ronco (2,38 s ÷ tom).
+    - O som some sozinho em 2,5 s depois de 15 s (`roncoSome`). O `wakeAll` também para tudo.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).

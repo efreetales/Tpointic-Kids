@@ -908,15 +908,15 @@ body.night .foot{color:#9AA6C8}
     "r2_erro_zeca","r3_erro_nina","r4_erro_tuca","r5_erro_caca",
     "r1_pergunta_caca","r2_pergunta_zeca","r3_pergunta_nina","r4_pergunta_tuca","r5_pergunta_caca",
     "r1_resposta_caca","r2_resposta_zeca","r3_resposta_nina","r4_resposta_tuca","r5_resposta_caca",
-    "m1_tema","m2_comemora","m3_ninar",
-    "sfx_bocejo","sfx_vibra","sfx_palma",
+    "m1_tema","m2_comemora","m3_ninar","m4_brilha",
+    "sfx_bocejo","sfx_vibra","sfx_palma","sfx_ronco",
     "pet_chega_caca","pet_tchau_caca","pet_enfeite1_caca","pet_enfeite2_caca","pet_enfeite3_caca",
     "pet_come_manga_caca","pet_come_banana_caca","pet_come_morango_caca","pet_come_uva_caca","pet_come_caju_caca",
     "pet_cocegas_caca","pet_bola_caca","pet_bolhas_caca","pet_danca_caca"
   ];
   const clips = {};
   // Tempo de cada palavra cantada nas músicas (audios/<musica>.tempos.json, feito pelo gerar_audios.ps1).
-  const SONGS = ["m1_tema","m2_comemora","m3_ninar"];
+  const SONGS = ["m1_tema","m2_comemora","m3_ninar","m4_brilha"];
   const RESPOSTAS = ["r1_resposta_caca","r2_resposta_zeca","r3_resposta_nina","r4_resposta_tuca","r5_resposta_caca",
     "pet_come_manga_caca","pet_come_banana_caca","pet_come_morango_caca","pet_come_uva_caca","pet_come_caju_caca"];   // falas soletradas
   const tempos = {};
@@ -1271,6 +1271,12 @@ body.night .foot{color:#9AA6C8}
 
   // ---------- A música da rodada (letra original) ----------
   const SONG = ["Muito bem, você acertou!", "Bata palmas com alegria!", "Bata palmas, bate, bate!", "Bata palmas, que energia!"];
+  // Duas músicas de vitória que se revezam a cada rodada (m4 "Brilha e Palmas", enviada pelo Tales).
+  const VITORIAS = [
+    { musica: "m2_comemora", letra: SONG },
+    { musica: "m4_brilha", letra: ["Muito bem, você conseguiu! Eba!", "Bate palmas que foi genial!", "Clap, clap, clap!"] },
+  ];
+  let vitoriaVez = 0;
 
   function afterSong(end){ later(victoryDone, end * 1000); }
   function clearSongScene(){
@@ -1318,8 +1324,9 @@ body.night .foot{color:#9AA6C8}
   }
 
   function sing(){
+    const vit = VITORIAS[vitoriaVez++ % VITORIAS.length], mus = vit.musica;
     bubble.innerHTML = `A Bicharada vai cantar!`;
-    lyricsEl.innerHTML = SONG.map(l => `<div>${l.split(" ").map(w => `<span class="w">${w}</span>`).join(" ")}</div>`).join("");
+    lyricsEl.innerHTML = vit.letra.map(l => `<div>${l.split(" ").map(w => `<span class="w">${w}</span>`).join(" ")}</div>`).join("");
     lyricsEl.classList.add("show");
     const words = [...lyricsEl.querySelectorAll(".w")];
     CRITTERS.forEach(c => critterEl(c).classList.add("dance"));
@@ -1328,16 +1335,16 @@ body.night .foot{color:#9AA6C8}
     el("field").classList.add("singing");
     inVictory = true; updateBar();
 
-    if (hasClip("m2_comemora")) {
-      const d = playClip("m2_comemora", CRITTERS);
-      palmasNaLetra(tempos.m2_comemora, audio().currentTime);     // "Bata palmas": todos batem palmas, com som
+    if (hasClip(mus)) {
+      const d = playClip(mus, CRITTERS);
+      palmasNaLetra(tempos[mus], audio().currentTime);     // "Bata palmas": todos batem palmas, com som
       comemorou = false;
-      const twc = tempos.m2_comemora;
+      const twc = tempos[mus];
       const tCome = twc ? twc[twc.length - 1].f + 0.15 : Math.max(0, d - 2);
       later(comemora, tCome * 1000);
       // Cada palavra acende quando é cantada. Se a contagem de palavras não bater com a letra da tela,
       // espalha a letra entre a primeira e a última palavra cantada.
-      const tw = tempos.m2_comemora;
+      const tw = tempos[mus];
       const at = i => !tw ? 0.2 + i * (d * 0.85) / words.length
         : tw.length === words.length ? tw[i].i
         : tw[0].i + i * (tw[tw.length - 1].f - tw[0].i) / words.length;
@@ -1411,14 +1418,22 @@ body.night .foot{color:#9AA6C8}
     }, 2500));
   }
   // Ronco do final (só visual): respiração funda, cada bicho no seu ritmo, um pouco defasados.
+  // Ronco (sfx_ronco, enviado pelo Tales): cada bicho no seu tom, baixinho, e o som some sozinho depois de ~15 s.
   function snoreAll(){
-    const len = 3;
+    const len = 2.38;                            // um ronco do arquivo (são dois por volta de 4,76 s)
     CRITTERS.forEach((c, i) => sleepTimers.push(setTimeout(() => {
       const b = critterEl(c), rate = SFX_RATE[c.id];
       b.classList.remove("drowsy", "yawn"); b.classList.add("sleep", "snore");
       b.style.setProperty("--snore", (len / rate).toFixed(2) + "s");
+      sfx("sfx_ronco", rate, 0.16, true);
       if (!b.dataset.zzz) { b.dataset.zzz = "1"; sleepTimers.push(setInterval(() => zzz(c, true), 1300)); }
     }, i * 700)));
+    sleepTimers.push(setTimeout(roncoSome, 15000));
+  }
+  function roncoSome(){
+    const a = audio(); if (!a) return;
+    loops.forEach(({ src, g }) => { g.gain.setValueAtTime(g.gain.value, a.currentTime); g.gain.linearRampToValueAtTime(0.0001, a.currentTime + 2.5); try { src.stop(a.currentTime + 2.6); } catch(e) {} });
+    loops = [];
   }
   function wakeAll(){
     sleepTimers.forEach(t => { clearTimeout(t); clearInterval(t); }); sleepTimers = [];
@@ -1524,7 +1539,7 @@ body.night .foot{color:#9AA6C8}
         if (tempos.m1_tema) trechosBumbum(tempos.m1_tema).forEach(([a, b]) =>
           later(() => { if (special === "tema") rebolaTurma((b - a) * 1000); }, Math.max(0, a - 0.4) * 1000));
       } else {
-        d = bedtime() + 6;
+        d = bedtime() + 12;                         // deixa a turma roncar uns 10 s antes de acordar
       }
       specialTimer = setTimeout(() => endSpecial(true), d * 1000);
     });
@@ -1971,7 +1986,7 @@ body.night .foot{color:#9AA6C8}
     return segs;
   }
   const trechosBumbum = tw => trechosLetra(tw, /^balan/, /bumbum/, 3);
-  const trechosPalmas = tw => trechosLetra(tw, /^bata$/, /^palmas/, 2);
+  const trechosPalmas = tw => trechosLetra(tw, /^bat[ae]$/, /^palmas/, 3);   // até o fim do verso ("…que foi genial")
   const dancando = () => CRITTERS.map(critterEl).filter(b => b && b.classList.contains("dance"));
   // A turma toda que está dançando faz o mesmo passo junto por "ms" milissegundos.
   function passoTurma(nome, ms){
@@ -2000,10 +2015,18 @@ body.night .foot{color:#9AA6C8}
   function palmasNaLetra(tw, t0){
     if (!tw) return;
     const bt = beatMs() / 1000;
+    const agora = () => audio().currentTime - t0;
     trechosPalmas(tw).forEach(([a, b]) => {
-      later(() => passoTurma("palmas", (b - a + bt / 2) * 1000), Math.max(0, a - bt / 2 - (audio().currentTime - t0)) * 1000);
+      later(() => passoTurma("palmas", (b - a + bt / 2) * 1000), Math.max(0, a - bt / 2 - agora()) * 1000);
       for (let t = a; t < b - 0.2; t += bt) palmaEm(t0 + t, 0.7);   // volume escolhido pelo Tales (comparar_palmas)
     });
+    // "Clap, clap, clap": uma palma em cada "clap", e a turma batendo palmas enquanto isso
+    const claps = tw.filter(w => /^clap/.test(plain(w.p)));
+    if (claps.length) {
+      const a = claps[0].i, b = claps[claps.length - 1].f;
+      later(() => passoTurma("palmas", (b - a + bt) * 1000), Math.max(0, a - bt / 2 - agora()) * 1000);
+      claps.forEach(w => palmaEm(t0 + w.i, 0.75));
+    }
   }
   // Na parte só de música depois do refrão (buraco de mais de 4 s entre palavras), a banda troca de lugar:
   // primeiro em pares, depois de ponta a ponta, e no fim volta para a ordem de sempre.
