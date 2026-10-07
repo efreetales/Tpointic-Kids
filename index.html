@@ -29,7 +29,7 @@ body{
   padding-inline:16px;
 }
 .app{
-  height:100%;max-width:760px;margin:0 auto;display:flex;flex-direction:column;
+  height:100%;height:100dvh;max-width:760px;margin:0 auto;display:flex;flex-direction:column;
   padding-block:10px 12px;box-sizing:border-box;gap:8px;
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -251,7 +251,14 @@ body.night .foot{color:#9AA6C8}
 .musicbtn[aria-pressed="true"]{background:var(--sun)}
 .musicbtn:disabled{opacity:.4;cursor:default;box-shadow:none}
 .musicbtn:focus-visible{outline:4px solid var(--coral);outline-offset:3px}
-.foot{font-size:12px;color:var(--soft);text-align:center;line-height:1.35}
+/* Rodapé: só um botãozinho de uma linha; o texto para os pais abre numa janelinha (#infoPais). */
+.foot{font:700 12px/1.2 var(--font-body);color:var(--soft);background:none;border:none;padding:2px 8px;margin:0 auto;
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;display:block}
+.foot:focus-visible{outline:3px solid var(--coral);outline-offset:2px;border-radius:6px}
+#infoPais{z-index:6;background:#BFE7F2}
+#infoPais p.infotexto{font-size:clamp(14px,3.8vw,16px);max-width:46ch;text-align:left}
+/* celular: os três botões de música cabem numa linha (rótulos curtos, ver updateBar) */
+@media (max-width:440px){ .musicbar{flex-wrap:nowrap;gap:6px} .musicbtn{padding:5px 10px;font-size:14px;white-space:nowrap} }
 
 /* Telas de início / fim */
 .overlay{
@@ -493,6 +500,11 @@ body.night .foot{color:#9AA6C8}
       <p>A Bicharada cantou muito e agora vai descansar. Até a próxima!</p>
       <button class="bigbtn" id="againBtn">Brincar de novo</button>
     </div>
+    <div class="overlay" id="infoPais" hidden role="dialog" aria-labelledby="infoPaisTit">
+      <h2 id="infoPaisTit">Para pais</h2>
+      <p class="infotexto">Jogo de contagem para 3 a 6 anos. Ligue o som. Sem anúncios e sem cadastro. Microfone: o jogo só escuta na pergunta "Que fruta é essa?", por até 40 segundos, com o ícone 🎤 pulsando. O reconhecimento é feito pelo navegador: no próprio aparelho quando possível; senão, a fala vai para o serviço do Google ou da Apple. Se recusar o microfone, joga-se só tocando. Vozes geradas com ElevenLabs.</p>
+      <button class="bigbtn" id="infoPaisOk">Entendi</button>
+    </div>
     <div class="overlay" id="confirmHome" hidden role="dialog" aria-labelledby="confirmHomeTit">
       <h2 id="confirmHomeTit">Voltar para o começo?</h2>
       <p>O jogo recomeça do início.</p>
@@ -507,7 +519,7 @@ body.night .foot{color:#9AA6C8}
     <button class="musicbtn" id="btnNinar" type="button" aria-pressed="false"><span aria-hidden="true">☾</span> <span class="lbl">Música de dormir</span></button>
     <button class="musicbtn" id="btnPular" type="button" disabled><span aria-hidden="true">⏭</span> <span class="lbl">Pular música</span></button>
   </div>
-  <p class="foot">Para pais: jogo de contagem para 3 a 6 anos. Ligue o som. Sem anúncios e sem cadastro. Microfone: o jogo só escuta na pergunta "Que fruta é essa?", por até 40 segundos, com o ícone 🎤 pulsando. O reconhecimento é feito pelo navegador: no próprio aparelho quando possível; senão, a fala vai para o serviço do Google ou da Apple. Se recusar o microfone, joga-se só tocando. Vozes geradas com ElevenLabs.</p>
+  <button class="foot" id="paisBtn" type="button" aria-haspopup="dialog"><span aria-hidden="true">ⓘ</span> Informações para pais</button>
 </div>
 
 <script>window.BICHOS_3D = {};   // ex.: { caca: "modelos/caca.glb" } liga a Cacá 3D animada (desligada: projeto 3D pausado)</script>
@@ -1497,14 +1509,21 @@ body.night .foot{color:#9AA6C8}
   // Música tema e música de dormir pausam a partida; quando acabam (ou são paradas),
   // a rodada atual recomeça da pergunta. Durante a vitória, a rodada conta como feita.
   let special = null, specialTimer = null;
+  // No celular (tela estreita) os rótulos ficam curtos para os três botões caberem numa linha.
+  const estreito = matchMedia("(max-width:440px)");
   function updateBar(){
-    [["btnTema","tema","Música tema"],["btnNinar","ninar","Música de dormir"]].forEach(([id, k, label]) => {
+    const curto = estreito.matches;
+    [["btnTema","tema","Música tema","Tema"],["btnNinar","ninar","Música de dormir","Dormir"]].forEach(([id, k, label, curta]) => {
       const b = el(id), on = special === k;
       b.setAttribute("aria-pressed", String(on));
-      b.querySelector(".lbl").textContent = on ? "Parar música" : label;
+      b.querySelector(".lbl").textContent = on ? (curto ? "Parar" : "Parar música") : (curto ? curta : label);
+      b.setAttribute("aria-label", on ? "Parar música" : label);
     });
+    el("btnPular").querySelector(".lbl").textContent = curto ? "Pular" : "Pular música";
+    el("btnPular").setAttribute("aria-label", "Pular música");
     el("btnPular").disabled = !inVictory;
   }
+  estreito.addEventListener("change", updateBar);
   function interruptGame(){
     fechaPet(false);
     gen++; clearTimeout(askTimer); stopClip(); stopListening();
@@ -2107,8 +2126,11 @@ body.night .foot{color:#9AA6C8}
     el("confirmHome").hidden = false; el("homeSim").focus();
   });
   el("homeSim").addEventListener("click", voltarInicio);
+  el("paisBtn").addEventListener("click", () => { el("infoPais").hidden = false; el("infoPaisOk").focus(); });
+  el("infoPaisOk").addEventListener("click", () => { el("infoPais").hidden = true; el("paisBtn").focus(); });
   el("homeNao").addEventListener("click", () => { el("confirmHome").hidden = true; });
   setStars(0);
+  updateBar();          // rótulos certos para o tamanho da tela desde o começo
   loadClips();
 })();
 </script>

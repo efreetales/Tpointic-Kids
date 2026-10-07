@@ -366,6 +366,11 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
 - 2026-10-06: **telas baixas no cantinho**: o balão flutua no topo (`position:absolute`) e o palco reserva espaço para ele. Com altura de até 760 px, a bandeja fica compacta.
 - 2026-10-06: **noite na floresta**: `night-sky` vai só até 0,78 de opacidade, para a floresta continuar aparecendo.
 
+- 2026-10-07: **melhor uso da tela do celular**. Num celular de 375×812, o quadro principal passou de 389 para 551 px. Versão anterior: `versoes_antigas/index_antes_celular.html`.
+  - O texto longo "Para pais" do rodapé (113 px) virou um link de uma linha, "ⓘ Informações para pais" (`#paisBtn`). Ele abre a janelinha `#infoPais` com o texto completo e o botão "Entendi".
+  - Até 440 px de largura, a barra de músicas fica numa linha só, com rótulos curtos ("Tema", "Dormir", "Pular", "Parar"). Quem faz isso é o `updateBar`, que acompanha a mudança de largura (`matchMedia`). O `aria-label` continua com o nome completo.
+  - `.app` usa `height:100dvh`: a altura real do celular, sem a barra de endereço.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).
