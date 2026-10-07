@@ -1,6 +1,6 @@
 # Bicharada Cantante
 
-Jogo web infantil (3 a 6 anos) da empresa do Tales: contar frutas com quatro bichos brasileiros que falam e cantam.
+Jogo web infantil (2 a 5 anos; antes 3 a 6, alinhado à divulgação em 2026-10-07) da empresa do Tales: contar frutas com quatro bichos brasileiros que falam e cantam.
 O Tales não programa: explique em português simples, faça o trabalho técnico por ele e só peça o que exige ação dele.
 
 ## Arquivos desta pasta
