@@ -933,7 +933,7 @@ body.night .foot{color:#9AA6C8}
     "r1_pergunta_caca","r2_pergunta_zeca","r3_pergunta_nina","r4_pergunta_tuca","r5_pergunta_caca",
     "r1_resposta_caca","r2_resposta_zeca","r3_resposta_nina","r4_resposta_tuca","r5_resposta_caca",
     "m1_tema","m2_comemora","m3_ninar","m4_brilha",
-    "sfx_bocejo","sfx_vibra","sfx_palma","sfx_ronco",
+    "sfx_bocejo","sfx_vibra","sfx_ronco",
     "pet_chega_caca","pet_tchau_caca","pet_enfeite1_caca","pet_enfeite2_caca","pet_enfeite3_caca",
     "pet_come_manga_caca","pet_come_banana_caca","pet_come_morango_caca","pet_come_uva_caca","pet_come_caju_caca",
     "pet_cocegas_caca","pet_bola_caca","pet_bolhas_caca","pet_danca_caca"
@@ -966,11 +966,7 @@ body.night .foot{color:#9AA6C8}
   const hasClip = n => !!clips[n];
 
   let currentClip = null, clipEndsAt = 0;
-  let palmasAgendadas = [];       // palmas marcadas no relógio do áudio: param junto com a música
-  function stopClip(){
-    if (currentClip) { try { currentClip.stop(); } catch(e) {} currentClip = null; }
-    palmasAgendadas.forEach(x => { try { x.stop(); } catch(e) {} }); palmasAgendadas = [];
-  }
+  function stopClip(){ if (currentClip) { try { currentClip.stop(); } catch(e) {} currentClip = null; } }
   // Toca um áudio e mexe a boca dos bichos conforme o volume da voz. Devolve a duração em segundos.
   function playClip(name, singers, fallbackText){
     const a = audio(); if (!a || !soundOn) return 0;
@@ -2025,22 +2021,8 @@ body.night .foot{color:#9AA6C8}
     dancando().forEach(b => fazPasso(b, nome, ms));
   }
   const rebolaTurma = ms => passoTurma("rebolado", ms);
-  // Uma palma, na hora "quando" do relógio do áudio (som gerado; sem o arquivo, uma palma sintetizada).
-  function palmaEm(quando, gain){
-    const a = audio(); if (!a || !soundOn) return;
-    let src = sfx("sfx_palma", 0.97 + Math.random() * 0.06, gain, false, quando);
-    if (!src) {
-      const len = 0.12, buf = a.createBuffer(1, Math.floor(a.sampleRate * len), a.sampleRate), d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) { const t = i / a.sampleRate; d[i] = (Math.random() * 2 - 1) * Math.exp(-t * 38) * (t % 0.011 < 0.006 || t > 0.03 ? 1 : 0.3); }
-      const n = a.createBufferSource(); n.buffer = buf;
-      const bp = a.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1400; bp.Q.value = 0.8;
-      const g = a.createGain(); g.gain.value = gain * 1.6;
-      n.connect(bp); bp.connect(g); g.connect(a.destination); n.start(quando);
-      src = { src: n };
-    }
-    palmasAgendadas.push(src.src);
-  }
-  // "Bata palmas": a turma bate palmas junto, no ritmo das palavras, com som de palma em cada batida.
+  // "Bata palmas": a turma bate palmas junto, no ritmo das palavras (só a animação: o som de palma foi tirado
+  // a pedido do Tales, porque ficava estranho por cima da música).
   // t0 = hora (relógio do áudio) em que a música começou. As mãos se encontram na metade de cada tempo
   // da animação, por isso o passo começa meio tempo antes da primeira palma.
   function palmasNaLetra(tw, t0){
@@ -2049,14 +2031,12 @@ body.night .foot{color:#9AA6C8}
     const agora = () => audio().currentTime - t0;
     trechosPalmas(tw).forEach(([a, b]) => {
       later(() => passoTurma("palmas", (b - a + bt / 2) * 1000), Math.max(0, a - bt / 2 - agora()) * 1000);
-      for (let t = a; t < b - 0.2; t += bt) palmaEm(t0 + t, 0.7);   // volume escolhido pelo Tales (comparar_palmas)
     });
-    // "Clap, clap, clap": uma palma em cada "clap", e a turma batendo palmas enquanto isso
+    // "Clap, clap, clap": a turma bate palmas enquanto isso
     const claps = tw.filter(w => /^clap/.test(plain(w.p)));
     if (claps.length) {
       const a = claps[0].i, b = claps[claps.length - 1].f;
       later(() => passoTurma("palmas", (b - a + bt) * 1000), Math.max(0, a - bt / 2 - agora()) * 1000);
-      claps.forEach(w => palmaEm(t0 + w.i, 0.75));
     }
   }
   // Na parte só de música depois do refrão (buraco de mais de 4 s entre palavras), a banda troca de lugar:
@@ -2095,12 +2075,9 @@ body.night .foot{color:#9AA6C8}
     const prontos = livres.filter(b => agora >= b._proximo);
     if (!prontos.length) return;
     const sorteia = b => { const op = PASSOS.filter(p => p !== b._ultimo); return op[Math.floor(Math.random() * op.length)]; };
-    const palmasSoltas = n => { const a = audio(); if (!a) return; const t = a.currentTime + bt / 2000;
-      for (let k = 0; k < 4; k++) palmaEm(t + k * bt / 1000, Math.min(0.7, 0.2 * n)); };
     if (livres.length > 1 && Math.random() < 0.35) {        // todo mundo junto
       const nome = sorteia(prontos[0]); livres.forEach(b => fazPasso(b, nome));
-      if (nome === "palmas") palmasSoltas(livres.length);
-    } else prontos.forEach(b => { const nome = sorteia(b); fazPasso(b, nome); if (nome === "palmas") palmasSoltas(1); });
+    } else prontos.forEach(b => fazPasso(b, sorteia(b)));
   }, 250);
 
   // Tela inicial já mostra a banda e uma fruta de exemplo.

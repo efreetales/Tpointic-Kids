@@ -371,6 +371,11 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
   - Até 440 px de largura, a barra de músicas fica numa linha só, com rótulos curtos ("Tema", "Dormir", "Pular", "Parar"). Quem faz isso é o `updateBar`, que acompanha a mudança de largura (`matchMedia`). O `aria-label` continua com o nome completo.
   - `.app` usa `height:100dvh`: a altura real do celular, sem a barra de endereço.
 
+- 2026-10-07: **sem som de palmas**, a pedido do Tales ("tá estranho").
+  - Saíram `palmaEm`, as palmas agendadas e as palmas soltas do coreógrafo. O `sfx_palma` não é mais carregado (o arquivo continua em `audios/`).
+  - A **animação** de palmas continua: no "Bata/Bate palmas", no "clap, clap, clap" e nas palmas sorteadas.
+  - Versão anterior: `versoes_antigas/index_antes_sem_som_palmas.html`.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).
