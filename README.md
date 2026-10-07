@@ -1,6 +1,6 @@
 # Bicharada Cantante
 
-Jogo infantil (3 a 6 anos) de contar e cantar com a Bicharada: Cacá (capivara), Zeca (sapo), Nina (oncinha) e Tuca (tucano).
+Jogo infantil (2 a 5 anos) de contar e cantar com a Bicharada: Cacá (capivara), Zeca (sapo), Nina (oncinha) e Tuca (tucano).
 
 - Jogo inteiro em `index.html` (HTML, CSS e JavaScript, sem build).
 - Vozes e músicas em `audios/` (geradas com ElevenLabs), videoclipe em `videos/clipe_tema2.mp4`, cenário em `imagens/`.
