@@ -2106,6 +2106,31 @@ body.night .foot{color:#9AA6C8}
   el("paisBtn").addEventListener("click", () => { el("infoPais").hidden = false; el("infoPaisOk").focus(); });
   el("infoPaisOk").addEventListener("click", () => { el("infoPais").hidden = true; el("paisBtn").focus(); });
   el("homeNao").addEventListener("click", () => { el("confirmHome").hidden = true; });
+  // ---------- Tela acesa ----------
+  // No celular a tela apagava sozinha no meio da brincadeira. O pedido de "tela acesa" (Wake Lock) só pode
+  // ser feito depois de um toque; vale enquanto a página está visível. Se ninguém tocar por 5 minutos, a tela
+  // volta a poder apagar (para não gastar bateria à toa). Navegadores sem o recurso seguem como antes.
+  const ACESA_MAX = 5 * 60 * 1000;
+  let telaAcesa = null, ultimoToque = 0, timerAcesa = null;
+  async function pedeTelaAcesa(){
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible" || telaAcesa) return;
+    try {
+      telaAcesa = await navigator.wakeLock.request("screen");
+      telaAcesa.addEventListener("release", () => { telaAcesa = null; });
+    } catch(e) { telaAcesa = null; }
+  }
+  function soltaTelaAcesa(){ if (telaAcesa) { telaAcesa.release().catch(() => {}); telaAcesa = null; } }
+  function toqueNaTela(){
+    ultimoToque = Date.now();
+    pedeTelaAcesa();
+    clearTimeout(timerAcesa);
+    timerAcesa = setTimeout(() => { if (Date.now() - ultimoToque >= ACESA_MAX) soltaTelaAcesa(); }, ACESA_MAX + 500);
+  }
+  ["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, toqueNaTela, { passive: true }));
+  document.addEventListener("visibilitychange", () => {   // o navegador solta o pedido ao trocar de app; ao voltar, pede de novo
+    if (document.visibilityState === "visible" && Date.now() - ultimoToque < ACESA_MAX) pedeTelaAcesa();
+  });
+
   setStars(0);
   updateBar();          // rótulos certos para o tamanho da tela desde o começo
   loadClips();

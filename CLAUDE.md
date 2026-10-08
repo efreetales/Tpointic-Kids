@@ -376,6 +376,13 @@ A transcrição do ElevenLabs (`POST /v1/speech-to-text`, `model_id=scribe_v1`, 
   - A **animação** de palmas continua: no "Bata/Bate palmas", no "clap, clap, clap" e nas palmas sorteadas.
   - Versão anterior: `versoes_antigas/index_antes_sem_som_palmas.html`.
 
+- 2026-10-08: **tela acesa no celular**: no celular, a tela apagava sozinha durante o jogo. Versão anterior: `versoes_antigas/index_antes_tela_acesa.html`.
+  - Usa a Screen Wake Lock API (`navigator.wakeLock.request("screen")`).
+  - O pedido é feito a cada toque ou tecla, porque precisa de gesto do usuário. Se a pessoa troca de app e volta (`visibilitychange`), o pedido é refeito.
+  - Depois de 5 min sem toque (`ACESA_MAX`), o pedido é solto, para não gastar bateria.
+  - Navegadores sem o recurso continuam como antes. Suporte: Chrome do Android e Safari do iOS 16.4+.
+  - Conferido: o toque real dispara o pedido. O navegador de testes recusa (`NotAllowedError`), mas o jogo segue normal.
+
 ## Pendência atual
 - Esperando o Tales ouvir as falas novas (v4 com emoção) no jogo. Se alguma não agradar, ele pode refazer pela tela AJUSTAR_VOZES (texto e marcações editáveis) ou pedir aqui.
 - Ao trocar o texto de `oba_*` ou `rN_erro_*` pela tela, atualizar também `OBA` / `PLAN[].erro` no `index.html` (são os balões).
